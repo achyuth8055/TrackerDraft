@@ -4,9 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './assets/styles.css';
 
 import { AuthProvider } from './context/AuthContext';
-
-// Import the new ProtectedRoute component
 import ProtectedRoute from './components/ProtectedRoute';
+import AIAssistant from './components/AIAssistant'; // <-- Import the AI component
 
 import LandingPage from './pages/LandingPage.jsx';
 import Dashboard from './pages/Dashboard.jsx';
@@ -28,15 +27,15 @@ function App() {
             <Route path="/login" element={<Login />} />
 
             {/* --- Protected Routes --- */}
-            {/* All routes nested inside here will require a user to be logged in */}
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/daily-tasks" element={<DailyTasks />} />
               <Route path="/study-groups" element={<StudyGroups />} />
               <Route path="/study-plan" element={<StudyPlan />} />
             </Route>
-            
           </Routes>
+          
+          <AIAssistant /> {/* <-- ADD THE COMPONENT HERE */}
         </div>
       </AuthProvider>
     </Router>
