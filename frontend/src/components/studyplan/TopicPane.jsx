@@ -15,7 +15,7 @@ const AddIcon = () => (
 );
 
 
-const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic }) => {
+const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic, onAddSubtopic }) => {
     const [addingToTopicId, setAddingToTopicId] = useState(null);
     const [newSubtopicText, setNewSubtopicText] = useState('');
     const [newTopicTitle, setNewTopicTitle] = useState(''); // State for new topic title
@@ -32,15 +32,15 @@ const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic }) => {
 
     const handleToggleSubtopic = (topicId, subtopicId) => {
         const updatedTopics = subject.topics.map(topic => {
-            if (topic.id === topicId) {
+            if (topic._id === topicId) {
                 const updatedSubtopics = topic.subtopics.map(subtopic =>
-                    subtopic.id === subtopicId ? { ...subtopic, completed: !subtopic.completed } : subtopic
+                    subtopic._id === subtopicId ? { ...subtopic, completed: !subtopic.completed } : subtopic
                 );
                 return { ...topic, subtopics: updatedSubtopics };
             }
             return topic;
         });
-        onUpdateSubject(subject.id, { topics: updatedTopics });
+        onUpdateSubject(subject._id, { topics: updatedTopics });
     };
 
     const handleShowAddSubtopicForm = (topicId) => {
@@ -51,14 +51,7 @@ const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic }) => {
     const handleAddSubtopic = (e, topicId) => {
         e.preventDefault();
         if (newSubtopicText.trim() === '') return;
-        const updatedTopics = subject.topics.map(topic => {
-            if (topic.id === topicId) {
-                const newSubtopic = { id: Date.now(), name: newSubtopicText, completed: false };
-                return { ...topic, subtopics: [...topic.subtopics, newSubtopic] };
-            }
-            return topic;
-        });
-        onUpdateSubject(subject.id, { topics: updatedTopics });
+        onAddSubtopic(subject._id, topicId, newSubtopicText);
         setNewSubtopicText('');
         setAddingToTopicId(null);
     };
@@ -66,7 +59,7 @@ const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic }) => {
     const handleAddNewTopic = (e) => {
         e.preventDefault();
         if (newTopicTitle.trim() === '') return;
-        onAddNewTopic(subject.id, newTopicTitle);
+        onAddNewTopic(subject._id, newTopicTitle);
         setNewTopicTitle('');
         setIsAddingTopic(false);
     };
@@ -119,15 +112,15 @@ const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic }) => {
                     </div>
                 ) : (
                     subject.topics.map(topic => (
-                        <div key={topic.id} className="topic-group">
+                        <div key={topic._id} className="topic-group">
                             <div className="topic-group-header">
                                 <h4 className="topic-group-title">{topic.name}</h4>
-                                <button className="add-subtopic-btn" onClick={() => handleShowAddSubtopicForm(topic.id)}>
+                                <button className="add-subtopic-btn" onClick={() => handleShowAddSubtopicForm(topic._id)}>
                                     <AddIcon />
                                 </button>
                             </div>
-                            {addingToTopicId === topic.id && (
-                                <form className="new-subtopic-form" onSubmit={(e) => handleAddSubtopic(e, topic.id)}>
+                            {addingToTopicId === topic._id && (
+                                <form className="new-subtopic-form" onSubmit={(e) => handleAddSubtopic(e, topic._id)}>
                                     <input
                                         type="text"
                                         className="new-subtopic-input"
@@ -141,8 +134,8 @@ const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic }) => {
                             )}
                             <ul className="subtopic-list">
                                 {topic.subtopics.map(subtopic => (
-                                    <li key={subtopic.id} className={`subtopic-item ${subtopic.completed ? 'completed' : ''}`}>
-                                        <div className="subtopic-name-section" onClick={() => handleToggleSubtopic(topic.id, subtopic.id)}>
+                                    <li key={subtopic._id} className={`subtopic-item ${subtopic.completed ? 'completed' : ''}`}>
+                                        <div className="subtopic-name-section" onClick={() => handleToggleSubtopic(topic._id, subtopic._id)}>
                                             <div className="subtopic-checkbox"></div>
                                             <AiIcon />
                                             <span>{subtopic.name}</span>

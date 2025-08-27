@@ -30,9 +30,9 @@ const SubjectList = ({ subjects, activeSubjectId, setActiveSubjectId, onAddNewSu
         <nav className="subject-list">
           {subjects.map(subject => (
             <button
-              key={subject.id}
-              className={`subject-list-item ${activeSubjectId === subject.id ? 'active' : ''}`}
-              onClick={() => setActiveSubjectId(subject.id)}
+              key={subject._id}
+              className={`subject-list-item ${activeSubjectId === subject._id ? 'active' : ''}`}
+              onClick={() => setActiveSubjectId(subject._id)}
             >
               {subject.name}
             </button>

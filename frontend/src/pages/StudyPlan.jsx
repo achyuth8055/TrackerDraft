@@ -60,6 +60,15 @@ const StudyPlan = () => {
     }
   };
 
+  const handleAddSubtopic = async (subjectId, topicId, subtopicName) => {
+    try {
+      const res = await authAxios.post(`/${subjectId}/topics/${topicId}/subtopics`, { name: subtopicName });
+      setSubjects(subjects.map(subject => subject._id === subjectId ? res.data.data : subject));
+    } catch (error) {
+      console.error("Error adding subtopic:", error);
+    }
+  };
+
   const handleUpdateSubject = async (subjectId, updatedData) => {
     // This function is now more generic, but we'll use it for subtopic toggling
     // A more complex app might have a dedicated subtopic update function
@@ -112,6 +121,7 @@ const StudyPlan = () => {
           subject={activeSubject}
           onUpdateSubject={handleUpdateSubject}
           onAddNewTopic={handleAddNewTopic}
+          onAddSubtopic={handleAddSubtopic}
         />
       </div>
     </div>
