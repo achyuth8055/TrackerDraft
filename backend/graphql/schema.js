@@ -2,6 +2,7 @@ const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLSchema, GraphQLNonNu
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { autoJoinDefaultGroup } = require('../controllers/studyGroupController');
 
 // User Type
 const UserType = new GraphQLObjectType({
@@ -59,6 +60,15 @@ const Mutation = new GraphQLObjectType({
         });
 
         const savedUser = await user.save();
+
+        // Auto-join the user to the default "LetsGrowTogether" group
+        try {
+          await autoJoinDefaultGroup(savedUser.id);
+          console.log(`User ${savedUser.name} auto-joined LetsGrowTogether group`);
+        } catch (error) {
+          console.error('Failed to auto-join default group:', error);
+          // Don't fail registration if auto-join fails
+        }
 
         // Create JWT
         const token = jwt.sign({ id: savedUser.id }, process.env.JWT_SECRET, {

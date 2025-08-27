@@ -1,133 +1,114 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import axios from 'axios'; // Ensure axios is imported
 
-// --- A more detailed, multi-layered SVG Illustration ---
-const HeroIllustration = () => {
-  const cardVariants = {
-    hidden: { opacity: 0, y: 50, scale: 0.8 },
-    visible: (i) => ({
-      opacity: 1, y: 0, scale: 1,
-      transition: { delay: i * 0.2 + 0.5, duration: 0.6, ease: "easeOut" }
-    }),
+// Premium Illustrations as Components
+const TaskPlanningIllustration = () => ( <div className="feature-illustration">📋</div> );
+const AnalyticsIllustration = () => ( <div className="feature-illustration analytics-illustration">📊</div> );
+const StudyGroupsIllustration = () => ( <div className="feature-illustration groups-illustration">👥</div> );
+const AIAssistantIllustration = () => ( <div className="feature-illustration ai-illustration">🤖</div> );
+const HeroIllustration = () => ( <div className="hero-illustration"><div className="main-dashboard-card"><div className="card-header-bar"></div><div className="progress-bars"><div className="progress-bar"><div className="progress-fill p-1"></div></div><div className="progress-bar"><div className="progress-fill p-2"></div></div></div><div className="mini-chart">{[20, 35, 15, 30, 25, 40, 18].map((h, i) => ( <div key={i} className="chart-bar" style={{ height: `${h}px`, animationDelay: `${i * 0.1}s` }} ></div> ))}</div></div><div className="floating-card c-1"></div><div className="floating-card c-2"></div></div> );
+
+// --- FULLY FUNCTIONAL Contact Form Component ---
+const ContactForm = () => {
+  // State updated to match backend (username, context)
+  const [formData, setFormData] = useState({ username: '', email: '', context: '' });
+  const [status, setStatus] = useState('idle'); // 'idle', 'sending', 'success', 'error'
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      // Send data to your backend endpoint
+      await axios.post('http://localhost:5001/api/contact', formData);
+      setStatus('success');
+      setFormData({ username: '', email: '', context: '' }); // Clear form
+    } catch (error) {
+      console.error('Contact form submission error:', error);
+      setStatus('error');
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
-    <motion.div
-      className="illustration-container"
-      whileHover={{ scale: 1.05, rotate: -2 }}
-      transition={{ type: "spring", stiffness: 300 }}
-    >
-      <motion.div custom={1} variants={cardVariants} className="illustration-card-bg"></motion.div>
-      <motion.div custom={2} variants={cardVariants} className="illustration-card-1">
-        <div className="card-header">Weekly Goals</div>
-        <div className="card-progress-bar"></div>
-      </motion.div>
-      <motion.div custom={3} variants={cardVariants} className="illustration-card-2">
-        <div className="card-header">Tasks</div>
-        <div className="card-task"></div>
-        <div className="card-task"></div>
-      </motion.div>
-      <motion.div custom={4} variants={cardVariants} className="illustration-card-3">
-        <div className="card-chart-bar c1"></div>
-        <div className="card-chart-bar c2"></div>
-        <div className="card-chart-bar c3"></div>
-      </motion.div>
-    </motion.div>
+    <form onSubmit={handleSubmit} className="contact-form">
+      <div className="form-group">
+        <label>Username</label>
+        <input
+          type="text"
+          name="username" // Updated name
+          value={formData.username}
+          onChange={handleChange}
+          required
+          className="form-input"
+          disabled={status === 'sending'}
+        />
+      </div>
+      <div className="form-group">
+        <label>Email</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          className="form-input"
+          disabled={status === 'sending'}
+        />
+      </div>
+      <div className="form-group">
+        <label>Context / Message</label> {/* Updated label */}
+        <textarea
+          name="context" // Updated name
+          value={formData.context}
+          onChange={handleChange}
+          rows="5"
+          required
+          className="form-input form-textarea"
+          disabled={status === 'sending'}
+        />
+      </div>
+      <button type="submit" className="contact-submit-btn" disabled={status === 'sending'}>
+        {status === 'sending' && 'Sending...'}
+        {status === 'idle' && 'Send Message'}
+        {status === 'success' && 'Message Sent! ✔'}
+        {status === 'error' && 'Try Again'}
+      </button>
+      {status === 'error' && <p className="form-status-error">Something went wrong. Please try again later.</p>}
+    </form>
   );
 };
 
-// --- Reusable Feature Card ---
-const FeatureCard = ({ icon, title, children }) => (
-    <div className="feature-card">
-        <div className="feature-illustration">{icon}</div>
-        <h3 className="feature-card-title">{title}</h3>
-        <p className="feature-card-text">{children}</p>
-    </div>
-);
-
-// --- SVG Icons for Features ---
-const TaskPlanningIcon = () => ( <svg className="feature-illustration" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 14H50" stroke="url(#paint0_linear_101_2)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><path d="M28 26H50" stroke="url(#paint1_linear_101_2)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><path d="M28 38H50" stroke="url(#paint2_linear_101_2)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 14H16" stroke="url(#paint3_linear_101_2)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 26H16" stroke="url(#paint4_linear_101_2)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 38H16" stroke="url(#paint5_linear_101_2)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><rect x="4" y="4" width="56" height="56" rx="8" stroke="url(#paint6_linear_101_2)" strokeWidth="4"/><defs><linearGradient id="paint0_linear_101_2" x1="28" y1="14" x2="50" y2="14" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint1_linear_101_2" x1="28" y1="26" x2="50" y2="26" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint2_linear_101_2" x1="28" y1="38" x2="50" y2="38" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint3_linear_101_2" x1="14" y1="14" x2="16" y2="14" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint4_linear_101_2" x1="14" y1="26" x2="16" y2="26" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint5_linear_101_2" x1="14" y1="38" x2="16" y2="38" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint6_linear_101_2" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2" stopOpacity="0.5"/><stop offset="1" stopColor="#00BFFF" stopOpacity="0.5"/></linearGradient></defs></svg> );
-const AnalyticsIcon = () => ( <svg className="feature-illustration" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 52V32" stroke="url(#paint0_linear_analytics)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><path d="M32 52V12" stroke="url(#paint1_linear_analytics)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><path d="M50 52V22" stroke="url(#paint2_linear_analytics)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><rect x="4" y="4" width="56" height="56" rx="8" stroke="url(#paint3_linear_analytics)" strokeWidth="4"/><defs><linearGradient id="paint0_linear_analytics" x1="14" y1="32" x2="14" y2="52" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint1_linear_analytics" x1="32" y1="12" x2="32" y2="52" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint2_linear_analytics" x1="50" y1="22" x2="50" y2="52" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint3_linear_analytics" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2" stopOpacity="0.5"/><stop offset="1" stopColor="#00BFFF" stopOpacity="0.5"/></linearGradient></defs></svg> );
-const StudyGroupsIcon = () => ( <svg className="feature-illustration" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44 48V46C44 40.4772 39.5228 36 34 36H22C16.4772 36 12 40.4772 12 46V48" stroke="url(#paint0_linear_groups)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><path d="M28 28C31.3137 28 34 25.3137 34 22C34 18.6863 31.3137 16 28 16C24.6863 16 22 18.6863 22 22C22 25.3137 24.6863 28 28 28Z" stroke="url(#paint1_linear_groups)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><path d="M52 48V46C52 41.0294 47.9706 37 43 37" stroke="url(#paint2_linear_groups)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><path d="M40 28C42.2091 28 44 26.2091 44 24C44 21.7909 42.2091 20 40 20" stroke="url(#paint3_linear_groups)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><defs><linearGradient id="paint0_linear_groups" x1="12" y1="36" x2="44" y2="48" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint1_linear_groups" x1="22" y1="16" x2="34" y2="28" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint2_linear_groups" x1="43" y1="37" x2="52" y2="48" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2" stopOpacity="0.7"/><stop offset="1" stopColor="#00BFFF" stopOpacity="0.7"/></linearGradient><linearGradient id="paint3_linear_groups" x1="40" y1="20" x2="44" y2="28" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2" stopOpacity="0.7"/><stop offset="1" stopColor="#00BFFF" stopOpacity="0.7"/></linearGradient></defs></svg> );
-const AIBotIcon = () => ( <svg className="feature-illustration" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M48 36V28C48 16.9543 39.0457 8 28 8H20C8.9543 8 0 16.9543 0 28V36" stroke="url(#paint0_linear_bot)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" transform="translate(8 8)"/><path d="M24 24H24.02" stroke="url(#paint1_linear_bot)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" transform="translate(8 8)"/><path d="M32 24H32.02" stroke="url(#paint2_linear_bot)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" transform="translate(8 8)"/><path d="M28 44C37.9411 44 46 35.9411 46 26H10C10 35.9411 18.0589 44 28 44Z" fill="url(#paint3_linear_bot)" transform="translate(8 8)"/><defs><linearGradient id="paint0_linear_bot" x1="0" y1="8" x2="48" y2="36" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2" stopOpacity="0.5"/><stop offset="1" stopColor="#00BFFF" stopOpacity="0.5"/></linearGradient><linearGradient id="paint1_linear_bot" x1="24" y1="24" x2="24.02" y2="24" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint2_linear_bot" x1="32" y1="24" x2="32.02" y2="24" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient><linearGradient id="paint3_linear_bot" x1="10" y1="26" x2="46" y2="44" gradientUnits="userSpaceOnUse"><stop stopColor="#8A2BE2"/><stop offset="1" stopColor="#00BFFF"/></linearGradient></defs></svg> );
-
 
 const LandingPage = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2 }
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-  };
+  const [currentSection, setCurrentSection] = useState('home');
 
   return (
-    <div className="landing-page-container">
-      <header className="header">
-        <nav className="header-nav">
-          <div className="nav-logo">ProdigyHub</div>
+    <div className="new-landing-page">
+      <header className="landing-header">
+        <nav className="landing-nav">
+          <div className="nav-logo">&lt;ProdigyHub/&gt;</div>
           <div className="nav-links">
-            <a href="#features">Features</a>
-            <a href="#solutions">Solutions</a>
-            <a href="#pricing">Pricing</a>
+            <button onClick={() => setCurrentSection('home')} className={`nav-link ${currentSection === 'home' ? 'active' : ''}`}>Features</button>
+            <button onClick={() => setCurrentSection('about')} className={`nav-link ${currentSection === 'about' ? 'active' : ''}`}>About</button>
+            <button onClick={() => setCurrentSection('contact')} className={`nav-link ${currentSection === 'contact' ? 'active' : ''}`}>Contact</button>
           </div>
-          <Link to="/signup" className="nav-get-started-btn">
-            Get Started
-          </Link>
+          <Link to="/signup" className="nav-get-started-btn">Get Started</Link>
         </nav>
       </header>
 
       <main>
-        <section className="hero-section">
-          <motion.div
-            className="hero-content"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.h1 className="hero-headline" variants={itemVariants}>
-              Master Your Studies. <br />
-              <span className="gradient-text">Unlock Your Potential.</span>
-            </motion.h1>
-            <motion.p className="hero-subtext" variants={itemVariants}>
-              The all-in-one platform to organize tasks, track progress, and collaborate with peers. Powered by AI.
-            </motion.p>
-            <motion.div variants={itemVariants}>
-              <Link to="/signup" className="hero-cta-button">
-                🚀 Launch Your Dashboard
-              </Link>
-            </motion.div>
-
-            <motion.div initial="hidden" animate="visible" variants={containerVariants}>
-               <HeroIllustration />
-            </motion.div>
-          </motion.div>
-        </section>
-
-        <section id="features" className="features-section">
-          <h2 className="features-title">Everything You Need to Succeed</h2>
-          <div className="features-grid">
-            <FeatureCard icon={<TaskPlanningIcon />} title="Task Planning">
-                Organize your daily tasks and long-term goals in one clean interface.
-            </FeatureCard>
-            <FeatureCard icon={<AnalyticsIcon />} title="Progress Analytics">
-                Visualize your study progress with animated charts and detailed reports.
-            </FeatureCard>
-            <FeatureCard icon={<StudyGroupsIcon />} title="Study Groups">
-                Collaborate with peers in dedicated study groups and discussion channels.
-            </FeatureCard>
-            <FeatureCard icon={<AIBotIcon />} title="AI Assistant">
-                Get instant help and guidance from our AI-powered study assistant.
-            </FeatureCard>
-          </div>
-        </section>
+        {currentSection === 'home' && ( <> <section className="hero-section"><div className="hero-content"><h1 className="hero-headline">Master Your Studies.<br /><span className="gradient-text">Unlock Your Potential.</span></h1><p className="hero-subtext">The all-in-one platform to organize tasks, track progress, and collaborate with peers. Powered by AI for the modern learner.</p><Link to="/signup" className="hero-cta-button">🚀 Launch Your Dashboard</Link><HeroIllustration /></div></section><section className="features-section"><div className="features-container"><h2 className="features-title">Everything You Need to Succeed</h2><div className="features-grid"><div className="feature-card"><TaskPlanningIllustration /><h3 className="feature-card-title">Smart Task Planning</h3><p className="feature-card-text">Organize your daily tasks and long-term goals with intelligent scheduling and priority management.</p></div><div className="feature-card"><AnalyticsIllustration /><h3 className="feature-card-title">Progress Analytics</h3><p className="feature-card-text">Visualize your study progress with beautiful animated charts and detailed performance insights.</p></div><div className="feature-card"><StudyGroupsIllustration /><h3 className="feature-card-title">Study Groups</h3><p className="feature-card-text">Collaborate with peers in dedicated study groups with real-time chat and resource sharing.</p></div><div className="feature-card"><AIAssistantIllustration /><h3 className="feature-card-title">AI Assistant</h3><p className="feature-card-text">Get instant help and personalized guidance from our advanced AI-powered study assistant.</p></div></div></div></section></> )}
+        {currentSection === 'about' && ( <section className="content-section"><h2 className="section-title">About ProdigyHub</h2><p className="section-subtitle">Our mission is to empower learners through intelligent, accessible, and collaborative technology.</p><div className="about-grid"><div className="about-card">🎯 <h4>Focus-Driven</h4><p>Built with a distraction-free user experience at its core.</p></div><div className="about-card">🚀 <h4>Performance-First</h4><p>A lightning-fast and responsive design for seamless learning.</p></div><div className="about-card">🔒 <h4>Secure & Private</h4><p>Your data is protected with enterprise-grade security.</p></div></div></section> )}
+        {currentSection === 'contact' && ( <section className="content-section"><h2 className="section-title">Get in Touch</h2><p className="section-subtitle">Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p><ContactForm /></section> )}
       </main>
+
+      <footer className="landing-footer">
+        <p>&copy; {new Date().getFullYear()} ProdigyHub. All rights reserved.</p>
+      </footer>
     </div>
   );
 };

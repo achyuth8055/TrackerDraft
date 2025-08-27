@@ -4,7 +4,7 @@ require('dotenv').config();
 const { graphqlHTTP } = require('express-graphql');
 const schema = require('./graphql/schema');
 const connectDB = require('./config/db');
-
+const contactRoutes = require('./routes/contactRoutes');
 // Import Models for seeding
 const StudyGroup = require('./models/StudyGroup');
 
@@ -40,7 +40,7 @@ app.use('/api/studyplan', studyPlanRoutes);
 app.use('/api/groups', studyGroupRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/ai', aiRoutes);
-
+app.use('/api/contact', contactRoutes);
 // Start the Server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
