@@ -11,10 +11,9 @@ const StudyGroup = require('./models/StudyGroup');
 // Connect to Database and Seed initial data
 const startServer = async () => {
   await connectDB();
-  await StudyGroup.seed(); // Seed initial groups if the collection is empty
+  await StudyGroup.seed();
 };
 startServer();
-
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -29,16 +28,18 @@ app.use('/graphql', graphqlHTTP({
     graphiql: process.env.NODE_ENV === 'development',
 }));
 
-
 // --- REST API Routes ---
 const taskRoutes = require('./routes/taskRoutes');
 const studyPlanRoutes = require('./routes/studyPlanRoutes');
-const studyGroupRoutes = require('./routes/studyGroupRoutes'); // <-- Import new routes
+const studyGroupRoutes = require('./routes/studyGroupRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes'); // This will now work
+const aiRoutes = require('./routes/aiRoutes');
 
 app.use('/api/tasks', taskRoutes);
 app.use('/api/studyplan', studyPlanRoutes);
-app.use('/api/groups', studyGroupRoutes); // <-- Use new routes
-
+app.use('/api/groups', studyGroupRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Start the Server
 app.listen(PORT, () => {

@@ -15,26 +15,23 @@ const SubjectProgressBar = ({ subject, percentage, gradient }) => (
   </div>
 );
 
-const SubjectProgress = () => {
+const SubjectProgress = ({ subjects }) => {
   return (
     <div className="widget-card">
       <h3 className="widget-title">Subject Progress</h3>
       <div className="subject-progress-container">
-        <SubjectProgressBar 
-          subject="Data Structures & Algo" 
-          percentage={75} 
-          gradient="linear-gradient(to right, var(--premium-cyan), #34D399)" 
-        />
-        <SubjectProgressBar 
-          subject="System Design" 
-          percentage={40} 
-          gradient="linear-gradient(to right, var(--premium-pink), #FBBF24)" 
-        />
-        <SubjectProgressBar 
-          subject="Core Java" 
-          percentage={90} 
-          gradient="linear-gradient(to right, var(--premium-purple), var(--premium-pink))" 
-        />
+        {subjects && subjects.length > 0 ? (
+          subjects.map((subject, index) => (
+            <SubjectProgressBar 
+              key={index}
+              subject={subject.name} 
+              percentage={subject.progress} 
+              gradient={subject.gradient}
+            />
+          ))
+        ) : (
+          <p className="text-secondary">No subjects found. Go to the Study Plan page to add one!</p>
+        )}
       </div>
     </div>
   );
