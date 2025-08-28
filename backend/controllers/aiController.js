@@ -8,38 +8,51 @@ const handleAskAI = async (req, res) => {
         return res.status(400).json({ success: false, error: 'Prompt is required.' });
     }
 
-    // This is a token-optimized prompt for short, direct explanations.
+    // Token-optimized prompt
     const optimizedPrompt = `
-        You are an expert tutor AI. A student has asked the following question. 
+        You are an expert tutor AI named Tom. A student has asked a question. 
         Provide a concise, direct explanation suitable for a study guide. 
-        Do not use conversational fluff. Get straight to the point.
+        Use markdown for formatting like code blocks, bold text, and lists.
+        Get straight to the point.
         Question: "${prompt}"
     `;
 
     try {
+        // Set headers for Server-Sent Events (SSE)
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+
         const response = await axios.post(
             'https://api.deepseek.com/chat/completions',
             {
                 model: 'deepseek-chat',
                 messages: [
-                    { "role": "system", "content": "You are a helpful assistant." },
                     { "role": "user", "content": optimizedPrompt }
                 ],
+                stream: true, // This is the crucial parameter for enabling streaming
             },
             {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
                 },
+                responseType: 'stream', // Tell axios to handle the response as a stream
             }
         );
 
-        const aiResponse = response.data.choices[0].message.content;
-        res.status(200).json({ success: true, response: aiResponse });
+        // Pipe the data from the DeepSeek API directly to our client
+        response.data.on('data', (chunk) => {
+            res.write(chunk);
+        });
+
+        response.data.on('end', () => {
+            res.end(); // End the response when the stream is finished
+        });
 
     } catch (error) {
-        console.error('Error with DeepSeek API:', error.response ? error.response.data : error.message);
-        res.status(500).json({ success: false, error: 'Failed to get response from AI.' });
+        console.error('Error with DeepSeek API stream:', error.message);
+        res.status(500).end(); // End the connection with an error status
     }
 };
 

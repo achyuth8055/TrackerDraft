@@ -16,3 +16,10 @@ backend/your-credentials-file.json
 
 # macOS folder attributes
 .DS_Store
+
+
+# Environment and key files
+.env
+*.json
+serviceAccountKey.json
+/backend/serviceAccountKey.jsonbackend/serviceAccountKey.json

@@ -1,39 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const {
-  getGroups,
-  getGroupById,
+  getMyGroups,
   createGroup,
+  findGroups,
   joinGroup,
-  leaveGroup,
   getMessagesForGroup,
   createMessage,
 } = require('../controllers/studyGroupController');
-
 const { protect } = require('../middleware/authMiddleware');
 
-// Apply the 'protect' middleware to all routes in this file
 router.use(protect);
 
-// Group routes
+// Routes for managing groups the user is in
 router.route('/')
-  .get(getGroups)        // GET /api/groups - Get all groups or filtered groups
-  .post(createGroup);    // POST /api/groups - Create a new group
+  .get(getMyGroups)
+  .post(createGroup);
 
-// Specific group routes
-router.route('/:id')
-  .get(getGroupById);    // GET /api/groups/:id - Get specific group details
+// Route for discovering new groups to join
+router.route('/find').get(findGroups);
 
-// Group membership routes
-router.route('/:id/join')
-  .post(joinGroup);      // POST /api/groups/:id/join - Join a group
+// Route for joining a specific group
+router.route('/:groupId/join').post(joinGroup);
 
-router.route('/:id/leave')
-  .post(leaveGroup);     // POST /api/groups/:id/leave - Leave a group
-
-// Group message routes
+// Routes for messages within a specific group
 router.route('/:groupId/messages')
-  .get(getMessagesForGroup)    // GET /api/groups/:groupId/messages - Get all messages
-  .post(createMessage);        // POST /api/groups/:groupId/messages - Send a message
+  .get(getMessagesForGroup)
+  .post(createMessage);
 
 module.exports = router;

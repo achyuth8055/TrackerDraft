@@ -1,107 +1,43 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Create the context
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(null);
-    const [isLoading, setIsLoading] = useState(true); // Add loading state
+    // Initialize state directly from localStorage. This is the key part.
+    const [token, setToken] = useState(localStorage.getItem('token'));
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
     const navigate = useNavigate();
 
-    // This effect runs when the component loads to restore authentication state
+    // This effect synchronizes state changes back to localStorage
     useEffect(() => {
-        const initializeAuth = async () => {
-            try {
-                const storedToken = localStorage.getItem('token');
-                const storedUser = localStorage.getItem('user');
-                
-                if (storedToken && storedUser) {
-                    // Parse the stored user data
-                    const userData = JSON.parse(storedUser);
-                    
-                    // TODO: Optionally verify token with backend here
-                    // const isValidToken = await verifyToken(storedToken);
-                    // if (isValidToken) {
-                    
-                    setToken(storedToken);
-                    setUser(userData);
-                    // }
-                }
-            } catch (error) {
-                console.error('Error initializing auth:', error);
-                // Clear invalid data
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        initializeAuth();
-    }, []);
+        if (token && user) {
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+        }
+    }, [token, user]);
 
     // --- Login Function ---
     const loginAction = (data) => {
-        try {
-            const { token: newToken, ...userData } = data;
-            
-            // Update state
-            setUser(userData);
-            setToken(newToken);
-            
-            // Persist to localStorage
-            localStorage.setItem('token', newToken);
-            localStorage.setItem('user', JSON.stringify(userData));
-            
-            // Navigate to dashboard
-            navigate('/dashboard');
-        } catch (error) {
-            console.error('Login error:', error);
-        }
+        // Data from the backend already contains token, user info, etc.
+        setToken(data.token);
+        setUser({ id: data.id, name: data.name, email: data.email });
+        navigate('/dashboard');
     };
 
     // --- Logout Function ---
     const logoutAction = () => {
-        // Clear state
         setUser(null);
         setToken(null);
-        
-        // Clear localStorage
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        
-        // Navigate to login
+        // The useEffect hook will automatically clear localStorage
         navigate('/login');
     };
 
-    // --- Token Verification Function (optional) ---
-    const verifyToken = async (tokenToVerify) => {
-        try {
-            const response = await fetch('http://localhost:5001/api/verify-token', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${tokenToVerify}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-            return response.ok;
-        } catch (error) {
-            console.error('Token verification failed:', error);
-            return false;
-        }
-    };
-
     return (
-        <AuthContext.Provider value={{ 
-            token, 
-            user, 
-            isLoading, 
-            loginAction, 
-            logoutAction,
-            verifyToken 
-        }}>
+        <AuthContext.Provider value={{ token, user, loginAction, logoutAction }}>
             {children}
         </AuthContext.Provider>
     );

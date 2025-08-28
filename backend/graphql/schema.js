@@ -2,7 +2,8 @@ const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLSchema, GraphQLNonNu
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { autoJoinDefaultGroup } = require('../controllers/studyGroupController');
+const StudyGroup = require('../models/StudyGroup'); // <-- Import StudyGroup model
+const { appendToSheet } = require('../services/googleSheetsService');
 
 // User Type
 const UserType = new GraphQLObjectType({
@@ -11,15 +12,14 @@ const UserType = new GraphQLObjectType({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     email: { type: GraphQLString },
-    token: { type: GraphQLString }, // We'll generate and send a token
+    token: { type: GraphQLString },
   }),
 });
 
-// Root Query (for fetching data, e.g., get current user)
+// Root Query
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-        // This is a placeholder for a query that might get the logged-in user's data
         user: {
             type: UserType,
             args: { id: { type: GraphQLID } },
@@ -30,7 +30,7 @@ const RootQuery = new GraphQLObjectType({
     }
 });
 
-// Mutations (for creating/updating/deleting data)
+// Mutations
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
@@ -43,13 +43,11 @@ const Mutation = new GraphQLObjectType({
         password: { type: new GraphQLNonNull(GraphQLString) },
       },
       async resolve(parent, args) {
-        // Check if user already exists
         const existingUser = await User.findOne({ email: args.email });
         if (existingUser) {
           throw new Error('User already exists with that email.');
         }
 
-        // Hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(args.password, salt);
 
@@ -61,26 +59,26 @@ const Mutation = new GraphQLObjectType({
 
         const savedUser = await user.save();
 
-        // Auto-join the user to the default "LetsGrowTogether" group
+        // --- ADDED LOGIC ---
+        // Automatically add the new user to the "GrowTogether" group
         try {
-          await autoJoinDefaultGroup(savedUser.id);
-          console.log(`User ${savedUser.name} auto-joined LetsGrowTogether group`);
+            const defaultGroup = await StudyGroup.findOne({ name: 'GrowTogether' });
+            if (defaultGroup) {
+                defaultGroup.members.push(savedUser._id);
+                await defaultGroup.save();
+            }
         } catch (error) {
-          console.error('Failed to auto-join default group:', error);
-          // Don't fail registration if auto-join fails
+            console.error("Failed to add user to default group:", error);
         }
-
-        // Create JWT
+        // --- END OF ADDED LOGIC ---
+        
         const token = jwt.sign({ id: savedUser.id }, process.env.JWT_SECRET, {
           expiresIn: '30d',
         });
+        
+        appendToSheet(savedUser.name);
 
-        return {
-            id: savedUser.id,
-            name: savedUser.name,
-            email: savedUser.email,
-            token,
-        };
+        return { id: savedUser.id, name: savedUser.name, email: savedUser.email, token };
       },
     },
     // Login User
@@ -93,24 +91,19 @@ const Mutation = new GraphQLObjectType({
         async resolve(parent, args) {
             const user = await User.findOne({ email: args.email }).select('+password');
             if (!user) {
-                throw new Error('Invalid credentials');
+                throw new Error('No user found with this email.');
             }
 
             const isMatch = await bcrypt.compare(args.password, user.password);
             if (!isMatch) {
-                throw new Error('Invalid credentials');
+                throw new Error('Password incorrect.');
             }
 
             const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
                 expiresIn: '30d',
             });
-
-            return {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                token,
-            };
+            
+            return { id: user.id, name: user.name, email: user.email, token };
         }
     }
   },

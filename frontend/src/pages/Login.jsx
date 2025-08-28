@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react'; // Import useContext
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import AuthContext from '../context/AuthContext'; // Import the AuthContext
+import AuthContext from '../context/AuthContext';
 
 const BackArrowIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -13,9 +13,8 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
-    
-    const { loginAction } = useContext(AuthContext); // Get the login function from context
     const navigate = useNavigate();
+    const { loginAction } = useContext(AuthContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -41,10 +40,13 @@ const Login = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(graphqlQuery),
             });
-            const resData = await response.json();
-            if (resData.errors) throw new Error(resData.errors[0].message);
 
-            // --- NEW: Use the loginAction from context ---
+            const resData = await response.json();
+            if (resData.errors) {
+                // This will now show the specific error from the backend
+                throw new Error(resData.errors[0].message);
+            }
+
             loginAction(resData.data.login);
 
         } catch (err) {
