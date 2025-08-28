@@ -5,7 +5,12 @@ const SubjectProgressBar = ({ subject, percentage, topics }) => (
   <div className="subject-progress-item">
     <div className="subject-info">
       <span className="subject-name">{subject}</span>
-      <span className="subject-topics">{Array.isArray(topics)? topics.reduce((count, t) => count + (t.subtopics?.length || 0), 0): 0} topics</span>
+      <span className="subject-topics">
+  {Array.isArray(topics) 
+    ? topics.reduce((count, t) => count + (t.subtopics?.length || 0), 0) 
+    : 0} subtopics
+</span>
+
     </div>
     <div className="subject-progress-bar">
       <div 
