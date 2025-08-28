@@ -27,7 +27,7 @@ const SubjectProgress = ({ subjects }) => {
               key={index}
               subject={subject.name} 
               percentage={subject.progress} 
-              topics={subject.length}
+              topics={subject.topics.length}
             />
           ))
         ) : (
