@@ -2485,3 +2485,166 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 191, 255, 0.4);
 }
+
+/* ---
+--- NEW STUDY PLAN FUNCTIONALITY STYLES
+--- */
+
+/* Subject List Delete Button */
+.subject-list-item-wrapper {
+  position: relative;
+}
+
+.subject-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  border-radius: 0.5rem;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.subject-name {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.delete-subject-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s ease;
+  margin-left: 0.5rem;
+}
+
+.subject-list-item:hover .delete-subject-btn {
+  opacity: 1;
+}
+
+.delete-subject-btn:hover {
+  color: var(--premium-pink);
+  background-color: rgba(255, 105, 180, 0.1);
+}
+
+/* Topic Actions */
+.topic-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-to-tasks-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+}
+
+.add-to-tasks-btn:hover {
+  color: var(--premium-green);
+  border-color: var(--premium-green);
+  background-color: rgba(34, 197, 94, 0.1);
+}
+
+.delete-topic-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+}
+
+.delete-topic-btn:hover {
+  color: var(--premium-pink);
+  border-color: var(--premium-pink);
+  background-color: rgba(255, 105, 180, 0.1);
+}
+
+/* Subtopic Actions */
+.subtopic-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.delete-subtopic-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.subtopic-item:hover .delete-subtopic-btn {
+  opacity: 1;
+}
+
+.delete-subtopic-btn:hover {
+  color: var(--premium-pink);
+  background-color: rgba(255, 105, 180, 0.1);
+}
+
+.subtopic-item .add-to-tasks-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0.25rem;
+  opacity: 0;
+}
+
+.subtopic-item:hover .add-to-tasks-btn {
+  opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .topic-actions {
+    gap: 0.25rem;
+  }
+  
+  .subtopic-actions {
+    gap: 0.25rem;
+  }
+  
+  .add-to-tasks-btn,
+  .delete-topic-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0.25rem;
+  }
+}

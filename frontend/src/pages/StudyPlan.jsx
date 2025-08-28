@@ -58,6 +58,20 @@ const StudyPlan = () => {
     }
   };
 
+  const handleDeleteSubject = async (subjectId) => {
+    try {
+      await authAxios.delete(`/${subjectId}`);
+      const updatedSubjects = subjects.filter(subject => subject._id !== subjectId);
+      setSubjects(updatedSubjects);
+      // If the deleted subject was active, select the first remaining subject
+      if (activeSubjectId === subjectId) {
+        setActiveSubjectId(updatedSubjects.length > 0 ? updatedSubjects[0]._id : null);
+      }
+    } catch (error) {
+      console.error("Error deleting subject:", error);
+    }
+  };
+
   const handleAddNewTopic = async (subjectId, topicName) => {
     try {
       const res = await authAxios.post(`/${subjectId}/topics`, { name: topicName });
@@ -67,12 +81,41 @@ const StudyPlan = () => {
     }
   };
 
+  const handleDeleteTopic = async (subjectId, topicId) => {
+    try {
+      const res = await authAxios.delete(`/${subjectId}/topics/${topicId}`);
+      setSubjects(subjects.map(subject => subject._id === subjectId ? res.data.data : subject));
+    } catch (error) {
+      console.error("Error deleting topic:", error);
+    }
+  };
+
   const handleAddSubtopic = async (subjectId, topicId, subtopicName) => {
     try {
       const res = await authAxios.post(`/${subjectId}/topics/${topicId}/subtopics`, { name: subtopicName });
       setSubjects(subjects.map(subject => subject._id === subjectId ? res.data.data : subject));
     } catch (error) {
       console.error("Error adding subtopic:", error);
+    }
+  };
+
+  const handleDeleteSubtopic = async (subjectId, topicId, subtopicId) => {
+    try {
+      const res = await authAxios.delete(`/${subjectId}/topics/${topicId}/subtopics/${subtopicId}`);
+      setSubjects(subjects.map(subject => subject._id === subjectId ? res.data.data : subject));
+    } catch (error) {
+      console.error("Error deleting subtopic:", error);
+    }
+  };
+
+  const handleAddToTasks = async (taskText) => {
+    try {
+      await authAxios.post('/add-to-tasks', { taskText });
+      // Show success message or notification
+      alert('Successfully added to daily tasks!');
+    } catch (error) {
+      console.error("Error adding to tasks:", error);
+      alert('Failed to add to daily tasks. Please try again.');
     }
   };
 
@@ -123,12 +166,16 @@ const StudyPlan = () => {
           activeSubjectId={activeSubjectId}
           setActiveSubjectId={setActiveSubjectId}
           onAddNewSubject={handleAddNewSubject}
+          onDeleteSubject={handleDeleteSubject}
         />
         <TopicPane 
           subject={activeSubject}
           onUpdateSubject={handleUpdateSubject}
           onAddNewTopic={handleAddNewTopic}
+          onDeleteTopic={handleDeleteTopic}
           onAddSubtopic={handleAddSubtopic}
+          onDeleteSubtopic={handleDeleteSubtopic}
+          onAddToTasks={handleAddToTasks}
         />
       </div>
     </div>

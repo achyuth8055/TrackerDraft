@@ -14,8 +14,21 @@ const AddIcon = () => (
     </svg>
 );
 
+const DeleteIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
 
-const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic, onAddSubtopic }) => {
+const TaskIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 11L12 14L22 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 2.58579 20.4142C2.21071 20.0391 2 19.5304 2 19V5C2 4.46957 2.21071 3.96086 2.58579 3.58579C2.96086 3.21071 3.46957 3 4 3H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
+
+const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic, onDeleteTopic, onAddSubtopic, onDeleteSubtopic, onAddToTasks }) => {
     const [addingToTopicId, setAddingToTopicId] = useState(null);
     const [newSubtopicText, setNewSubtopicText] = useState('');
     const [newTopicTitle, setNewTopicTitle] = useState(''); // State for new topic title
@@ -62,6 +75,26 @@ const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic, onAddSubtopic }) =
         onAddNewTopic(subject._id, newTopicTitle);
         setNewTopicTitle('');
         setIsAddingTopic(false);
+    };
+
+    const handleDeleteTopic = (topicId, topicName) => {
+        if (window.confirm(`Are you sure you want to delete "${topicName}" and all its subtopics?`)) {
+            onDeleteTopic(subject._id, topicId);
+        }
+    };
+
+    const handleDeleteSubtopic = (topicId, subtopicId, subtopicName) => {
+        if (window.confirm(`Are you sure you want to delete "${subtopicName}"?`)) {
+            onDeleteSubtopic(subject._id, topicId, subtopicId);
+        }
+    };
+
+    const handleAddTopicToTasks = (topicName) => {
+        onAddToTasks(`Study: ${topicName}`);
+    };
+
+    const handleAddSubtopicToTasks = (subtopicName) => {
+        onAddToTasks(`Study: ${subtopicName}`);
     };
 
     if (!subject) {
@@ -115,9 +148,25 @@ const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic, onAddSubtopic }) =
                         <div key={topic._id} className="topic-group">
                             <div className="topic-group-header">
                                 <h4 className="topic-group-title">{topic.name}</h4>
-                                <button className="add-subtopic-btn" onClick={() => handleShowAddSubtopicForm(topic._id)}>
-                                    <AddIcon />
-                                </button>
+                                <div className="topic-actions">
+                                    <button 
+                                        className="add-to-tasks-btn" 
+                                        onClick={() => handleAddTopicToTasks(topic.name)}
+                                        title="Add topic to daily tasks"
+                                    >
+                                        <TaskIcon />
+                                    </button>
+                                    <button className="add-subtopic-btn" onClick={() => handleShowAddSubtopicForm(topic._id)}>
+                                        <AddIcon />
+                                    </button>
+                                    <button 
+                                        className="delete-topic-btn" 
+                                        onClick={() => handleDeleteTopic(topic._id, topic.name)}
+                                        title="Delete topic"
+                                    >
+                                        <DeleteIcon />
+                                    </button>
+                                </div>
                             </div>
                             {addingToTopicId === topic._id && (
                                 <form className="new-subtopic-form" onSubmit={(e) => handleAddSubtopic(e, topic._id)}>
@@ -140,9 +189,25 @@ const TopicPane = ({ subject, onUpdateSubject, onAddNewTopic, onAddSubtopic }) =
                                             <AiIcon />
                                             <span>{subtopic.name}</span>
                                         </div>
-                                        <button className="ai-assist-btn">
-                                            <span>Ask AI Help</span>
-                                        </button>
+                                        <div className="subtopic-actions">
+                                            <button 
+                                                className="add-to-tasks-btn" 
+                                                onClick={() => handleAddSubtopicToTasks(subtopic.name)}
+                                                title="Add subtopic to daily tasks"
+                                            >
+                                                <TaskIcon />
+                                            </button>
+                                            <button className="ai-assist-btn">
+                                                <span>Ask AI Help</span>
+                                            </button>
+                                            <button 
+                                                className="delete-subtopic-btn" 
+                                                onClick={() => handleDeleteSubtopic(topic._id, subtopic._id, subtopic.name)}
+                                                title="Delete subtopic"
+                                            >
+                                                <DeleteIcon />
+                                            </button>
+                                        </div>
                                     </li>
                                 ))}
                             </ul>
