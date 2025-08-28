@@ -20,19 +20,26 @@ const StudyGroups = () => {
   });
 
   const fetchMyGroups = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      console.log("No token available for fetching groups");
+      return;
+    }
     try {
+      console.log("Fetching study groups with token:", token.substring(0, 20) + "...");
       const res = await authAxios.get('/');
-      const groups = res.data.data;
+      console.log("Study groups fetched successfully:", res.data);
+      const groups = res.data.data || [];
       setMyGroups(groups);
 
       // Set active group to "GrowTogether" or the first group by default
       if (groups.length > 0 && !activeGroupId) {
         const defaultGroup = groups.find(g => g.name === 'GrowTogether') || groups[0];
+        console.log("Setting active group:", defaultGroup.name);
         setActiveGroupId(defaultGroup._id);
       }
     } catch (error) {
-      console.error("Failed to fetch user's groups:", error);
+      console.error("Failed to fetch user's groups:", error.response?.data || error.message);
+      setMyGroups([]); // Set empty array on error
     }
   }, [token, activeGroupId]); // Dependency on activeGroupId ensures we can refetch if needed
 

@@ -87,8 +87,10 @@ const FindGroupsModal = ({ authAxios, onGroupJoined, onClose }) => {
                     </ul>
                 </div>
                 <div className="modal-divider"></div>
+                <h3 className="modal-title create-title" style={{ margin: '20px' }}>Create a New Group</h3>
+                 <div className="modal-divider" ></div>
                 <div className="modal-section">
-                    <h3 className="modal-title create-title">Create a New Group</h3>
+                
                     <form onSubmit={handleCreateGroup} className="create-group-form">
                         <input type="text" placeholder="Group Name" value={newGroupName} onChange={(e) => setNewGroupName(e.target.value)} required />
                         <input type="text" placeholder="A short description" value={newGroupDesc} onChange={(e) => setNewGroupDesc(e.target.value)} required />

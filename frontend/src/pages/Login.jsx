@@ -20,34 +20,20 @@ const Login = () => {
         e.preventDefault();
         setError(null);
 
-        const graphqlQuery = {
-            query: `
-                mutation LoginUser($email: String!, $password: String!) {
-                    login(email: $email, password: $password) {
-                        id
-                        name
-                        email
-                        token
-                    }
-                }
-            `,
-            variables: { email, password }
-        };
-
         try {
-            const response = await fetch('http://localhost:5001/graphql', {
+            const response = await fetch('http://localhost:5001/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(graphqlQuery),
+                body: JSON.stringify({ email, password }),
             });
 
             const resData = await response.json();
-            if (resData.errors) {
-                // This will now show the specific error from the backend
-                throw new Error(resData.errors[0].message);
+            
+            if (!resData.success) {
+                throw new Error(resData.error || 'Login failed');
             }
 
-            loginAction(resData.data.login);
+            loginAction(resData);
 
         } catch (err) {
             setError(err.message);
@@ -62,9 +48,9 @@ const Login = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <button onClick={() => navigate(-1)} className="auth-back-btn" aria-label="Go back">
+                 <button onClick={() => navigate('/')} className="auth-back-btn" aria-label="Go back">
                     <BackArrowIcon />
-                </button>
+                </button> 
 
                 <h2 className="auth-title">Welcome Back!</h2>
                 <p className="auth-subtitle">Log in to continue your progress.</p>

@@ -22,16 +22,23 @@ const StudyPlan = () => {
   // --- Fetch all subjects on component load ---
   useEffect(() => {
     const getSubjects = async () => {
-      if (!token) return;
+      if (!token) {
+        console.log("No token available for fetching subjects");
+        return;
+      }
       try {
+        console.log("Fetching subjects with token:", token.substring(0, 20) + "...");
         const res = await authAxios.get('/');
-        setSubjects(res.data.data);
+        console.log("Subjects fetched successfully:", res.data);
+        const subjects = res.data.data || [];
+        setSubjects(subjects);
         // Set the first subject as active if it exists
-        if (res.data.data.length > 0) {
-          setActiveSubjectId(res.data.data[0]._id);
+        if (subjects.length > 0) {
+          setActiveSubjectId(subjects[0]._id);
         }
       } catch (error) {
-        console.error("Error fetching subjects:", error);
+        console.error("Error fetching subjects:", error.response?.data || error.message);
+        setSubjects([]); // Set empty array on error
       }
     };
     getSubjects();

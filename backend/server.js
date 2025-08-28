@@ -29,12 +29,14 @@ app.use('/graphql', graphqlHTTP({
 }));
 
 // --- REST API Routes ---
+const authRoutes = require('./routes/authRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const studyPlanRoutes = require('./routes/studyPlanRoutes');
 const studyGroupRoutes = require('./routes/studyGroupRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes'); // This will now work
 const aiRoutes = require('./routes/aiRoutes');
 
+app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/studyplan', studyPlanRoutes);
 app.use('/api/groups', studyGroupRoutes);

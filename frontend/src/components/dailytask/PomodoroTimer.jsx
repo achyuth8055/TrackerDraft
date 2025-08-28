@@ -5,8 +5,8 @@ const PauseIcon = () => ( <svg width="24" height="24" viewBox="0 0 24 24" fill="
 const ResetIcon = () => ( <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M23 4V10H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M1 20V14H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.51 9A9 9 0 0121.5 14.49" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M20.49 15A9 9 0 012.5 9.51" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg> );
 
 const PomodoroTimer = () => {
-    const WORK_DURATION = 25 * 60;
-    const SHORT_BREAK_DURATION = 5 * 60;
+    const WORK_DURATION = 60 * 60; // Fixed: Changed from 25 to 50 minutes
+    const SHORT_BREAK_DURATION = 1 * 60;
     const LONG_BREAK_DURATION = 15 * 60;
 
     const [mode, setMode] = useState('work');

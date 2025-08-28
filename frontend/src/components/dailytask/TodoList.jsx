@@ -13,11 +13,19 @@ const TodoList = () => {
 
     useEffect(() => {
         const fetchTasks = async () => {
-            if (!token) return;
+            if (!token) {
+                console.log("No token available for fetching tasks");
+                return;
+            }
             try {
+                console.log("Fetching tasks with token:", token.substring(0, 20) + "...");
                 const res = await authAxios.get('/');
-                setTasks(res.data.data);
-            } catch (error) { console.error("Error fetching tasks:", error); }
+                console.log("Tasks fetched successfully:", res.data);
+                setTasks(res.data.data || []);
+            } catch (error) { 
+                console.error("Error fetching tasks:", error.response?.data || error.message);
+                setTasks([]); // Set empty array on error
+            }
         };
         fetchTasks();
     }, [token]);

@@ -22,32 +22,21 @@ const SignUp = () => {
         e.preventDefault();
         setError(null);
 
-        const graphqlQuery = {
-            query: `
-                mutation RegisterUser($name: String!, $email: String!, $password: String!) {
-                    register(name: $name, email: $email, password: $password) {
-                        id
-                        name
-                        email
-                        token
-                    }
-                }
-            `,
-            variables: { name, email, password }
-        };
-
         try {
-            const response = await fetch('http://localhost:5001/graphql', {
+            const response = await fetch('http://localhost:5001/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(graphqlQuery),
+                body: JSON.stringify({ name, email, password }),
             });
+
             const resData = await response.json();
-            if (resData.errors) throw new Error(resData.errors[0].message);
             
-            // --- NEW: Use the loginAction from context ---
-            // This will update the global state and redirect to the dashboard
-            loginAction(resData.data.register);
+            if (!resData.success) {
+                throw new Error(resData.error || 'Registration failed');
+            }
+            
+            // Use the loginAction from context to log in the user after registration
+            loginAction(resData);
 
         } catch (err) {
             setError(err.message);
@@ -67,7 +56,7 @@ const SignUp = () => {
                 </button>
                 
                 <h2 className="auth-title">Create Your Account</h2>
-                <p className="auth-subtitle">Join ProdigyHub to start your journey.</p>
+                <p className="auth-subtitle">Join Tracker to track your progress.</p>
                 
                 {error && <p className="auth-error">{error}</p>}
 
