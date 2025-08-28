@@ -4,7 +4,9 @@ const SubjectProgressBar = ({ subject, percentage, topics }) => (
   <div className="subject-progress-item">
     <div className="subject-info">
       <span className="subject-name">{subject}</span>
-      <span className="subject-topics">{topics || 0} topics</span>
+      <span className="subject-topics">
+  {(Array.isArray(topics) ? topics.length : 0)} topics
+</span>
     </div>
     <div className="subject-progress-bar">
       <div 
@@ -27,7 +29,7 @@ const SubjectProgress = ({ subjects }) => {
               key={index}
               subject={subject.name} 
               percentage={subject.progress} 
-              topics={subject.topics?.length || 0}
+              topics={subject.topics}
             />
           ))
         ) : (
