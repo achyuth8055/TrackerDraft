@@ -1,8 +1,10 @@
-import React, { useState, useContext } from 'react'; // Import useContext
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import AuthContext from '../context/AuthContext'; // Import the AuthContext
+import AuthContext from '../context/AuthContext';
+
 const API_URL = process.env.REACT_APP_API_URL;
+
 const BackArrowIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -15,12 +17,24 @@ const SignUp = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     
-    const { loginAction } = useContext(AuthContext); // Get the login function from context
+    const { loginAction } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    // Gmail validation function
+    const isValidGmail = (email) => {
+        const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+        return gmailRegex.test(email);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
+
+        // Check Gmail validation
+        if (!isValidGmail(email)) {
+            setError('Only valid Gmail addresses are allowed.');
+            return;
+        }
 
         try {
             const response = await fetch(`${API_URL}/api/auth/register`, {
@@ -34,8 +48,8 @@ const SignUp = () => {
             if (!resData.success) {
                 throw new Error(resData.error || 'Registration failed');
             }
-            
-            // Use the loginAction from context to log in the user after registration
+
+            // Log in user immediately after successful signup
             loginAction(resData);
 
         } catch (err) {
@@ -63,15 +77,33 @@ const SignUp = () => {
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="form-group">
                         <label htmlFor="name">Name</label>
-                        <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+                        <input 
+                            type="text" 
+                            id="name" 
+                            value={name} 
+                            onChange={(e) => setName(e.target.value)} 
+                            required 
+                        />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                        <label htmlFor="email">Email (Gmail only)</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            value={email} 
+                            onChange={(e) => setEmail(e.target.value)} 
+                            required 
+                        />
                     </div>
                     <div className="form-group">
                         <label htmlFor="password">Password</label>
-                        <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                        <input 
+                            type="password" 
+                            id="password" 
+                            value={password} 
+                            onChange={(e) => setPassword(e.target.value)} 
+                            required 
+                        />
                     </div>
                     <button type="submit" className="auth-button">Create Account</button>
                 </form>
