@@ -1,12 +1,10 @@
 import React from 'react';
-
+const totalSubtopics = Array.isArray(topics)? topics.reduce((count, t) => count + (t.subtopics?.length || 0), 0): 0;
 const SubjectProgressBar = ({ subject, percentage, topics }) => (
   <div className="subject-progress-item">
     <div className="subject-info">
       <span className="subject-name">{subject}</span>
-      <span className="subject-topics">
-  {(Array.isArray(topics) ? topics.length : 0)} topics
-</span>
+      <span className="subject-topics">{totalSubtopics} topics</span>
     </div>
     <div className="subject-progress-bar">
       <div 
@@ -29,7 +27,7 @@ const SubjectProgress = ({ subjects }) => {
               key={index}
               subject={subject.name} 
               percentage={subject.progress} 
-              topics={subject.topics}
+              topics={subject.topics.subtopics}
             />
           ))
         ) : (
