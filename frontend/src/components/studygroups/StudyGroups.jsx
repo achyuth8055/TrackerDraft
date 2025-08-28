@@ -13,7 +13,7 @@ const StudyGroups = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { token } = useContext(AuthContext);
 
-  const authAxios = axios.create({ baseURL: 'http://localhost:5001/api/groups', headers: { Authorization: `Bearer ${token}` } });
+  const authAxios = axios.create({ baseURL: `${process.env.REACT_APP_API_URL}/api/groups`, headers: { Authorization: `Bearer ${token}` } });
 
   useEffect(() => {
     const fetchMyGroups = async () => {

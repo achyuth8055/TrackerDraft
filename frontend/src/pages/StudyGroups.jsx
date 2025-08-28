@@ -15,7 +15,7 @@ const StudyGroups = () => {
 
   // Create a reusable axios instance with the auth token
   const authAxios = axios.create({
-    baseURL: 'http://localhost:5001/api/groups',
+    baseURL: `${process.env.REACT_APP_API_URL}/api/groups`,
     headers: { Authorization: `Bearer ${token}` },
   });
 

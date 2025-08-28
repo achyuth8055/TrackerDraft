@@ -35,7 +35,7 @@ const CreateGroupForm = ({ onGroupCreated, onClose }) => {
         : [];
 
       const response = await axios.post(
-        'http://localhost:5001/api/groups',
+        `${process.env.REACT_APP_API_URL}/api/groups`,
         {
           ...formData,
           tags: tagsArray,

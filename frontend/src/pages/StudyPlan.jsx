@@ -13,7 +13,7 @@ const StudyPlan = () => {
 
   // --- Create a secure Axios instance ---
   const authAxios = axios.create({
-    baseURL: 'http://localhost:5001/api/studyplan',
+    baseURL: `${process.env.REACT_APP_API_URL}/api/studyplan`,
     headers: {
       Authorization: `Bearer ${token}`,
     },

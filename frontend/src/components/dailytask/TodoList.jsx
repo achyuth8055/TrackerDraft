@@ -9,7 +9,7 @@ const TodoList = () => {
     const [newTask, setNewTask] = useState('');
     const { token } = useContext(AuthContext);
 
-    const authAxios = axios.create({ baseURL: 'http://localhost:5001/api/tasks', headers: { Authorization: `Bearer ${token}` } });
+    const authAxios = axios.create({ baseURL: `${process.env.REACT_APP_API_URL}/api/tasks`, headers: { Authorization: `Bearer ${token}` } });
 
     useEffect(() => {
         const fetchTasks = async () => {
