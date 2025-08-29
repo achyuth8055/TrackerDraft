@@ -23,3 +23,6 @@ backend/your-credentials-file.json
 *.json
 serviceAccountKey.json
 /backend/serviceAccountKey.jsonbackend/serviceAccountKey.json
+
+# 
+#  "start": "npx serve -s build -l $PORT",
