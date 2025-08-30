@@ -56,8 +56,8 @@ const Dashboard = () => {
         <Header title="Dashboard" />
         <div className="dashboard-widgets-grid">
           <div className="widget-span-2">
-            {/* WeeklyProgressChart can be made dynamic in a similar way if needed */}
-            <WeeklyProgressChart /> 
+            {/* Pass the weeklyProgress data from the stats object to the chart */}
+            <WeeklyProgressChart data={stats?.weeklyProgress} /> 
           </div>
           <TaskSummary summary={stats?.taskSummary} />
           <div className="widget-span-3">

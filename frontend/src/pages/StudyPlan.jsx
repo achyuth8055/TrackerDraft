@@ -27,9 +27,7 @@ const StudyPlan = () => {
         return;
       }
       try {
-        console.log("Fetching subjects with token:", token.substring(0, 20) + "...");
         const res = await authAxios.get('/');
-        console.log("Subjects fetched successfully:", res.data);
         const subjects = res.data.data || [];
         setSubjects(subjects);
         // Set the first subject as active if it exists
@@ -45,16 +43,24 @@ const StudyPlan = () => {
   }, [token]);
 
 
-  // --- Handler Functions for API Calls ---
-
-  const handleAddNewSubject = async (subjectName) => {
+  // --- THIS IS THE UPDATED FUNCTION ---
+  // It now correctly handles the object with `name` and `deadline`.
+  const handleAddNewSubject = async (subjectData) => {
     try {
-      const res = await authAxios.post('/', { name: subjectName });
+      // Create the payload with both name and the formatted deadline
+      const payload = {
+        name: subjectData.name,
+        deadline: subjectData.deadline.toISOString()
+      };
+
+      // Make the API call with the new payload
+      const res = await authAxios.post('/', payload);
       const newSubject = res.data.data;
-      setSubjects([...subjects, newSubject]);
+      
+      setSubjects(prevSubjects => [...prevSubjects, newSubject]);
       setActiveSubjectId(newSubject._id); // Select the new subject
     } catch (error) {
-      console.error("Error adding new subject:", error);
+      console.error("Error adding new subject:", error.response?.data || error.message);
     }
   };
 
@@ -72,6 +78,7 @@ const StudyPlan = () => {
     }
   };
 
+  // --- All other handler functions remain unchanged ---
   const handleAddNewTopic = async (subjectId, topicName) => {
     try {
       const res = await authAxios.post(`/${subjectId}/topics`, { name: topicName });
@@ -107,24 +114,26 @@ const StudyPlan = () => {
       console.error("Error deleting subtopic:", error);
     }
   };
-
+  
   const handleAddToTasks = async (taskText) => {
     try {
-      await authAxios.post('/add-to-tasks', { taskText });
-      // Show success message or notification
-      alert('Successfully added to daily tasks!');
+        const taskAxios = axios.create({
+            baseURL: `${process.env.REACT_APP_API_URL}/api/tasks`,
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        await taskAxios.post('/', { text: taskText });
+        alert('Successfully added to daily tasks!');
     } catch (error) {
-      console.error("Error adding to tasks:", error);
-      alert('Failed to add to daily tasks. Please try again.');
+        console.error("Error adding to tasks:", error);
+        alert('Failed to add to daily tasks. Please try again.');
     }
   };
 
   const handleUpdateSubject = async (subjectId, updatedData) => {
-    // This function is now more generic, but we'll use it for subtopic toggling
-    // A more complex app might have a dedicated subtopic update function
     try {
-        // Find the specific change to send to the backend
         const originalSubject = subjects.find(s => s._id === subjectId);
+        if(!originalSubject) return;
+
         let changedSubtopic;
         let changedTopicId;
 
@@ -154,7 +163,6 @@ const StudyPlan = () => {
     }
   };
 
-
   const activeSubject = subjects.find(s => s._id === activeSubjectId);
 
   return (
@@ -183,3 +191,4 @@ const StudyPlan = () => {
 };
 
 export default StudyPlan;
+

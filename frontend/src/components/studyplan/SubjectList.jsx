@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
+import AddSubjectModal from './AddSubjectModal';
 
-// A simple hash icon for the groups
-const HashIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M5 9H19" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M5 15H19" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M9 5L7 19" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M17 5L15 19" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-// Delete icon
 const DeleteIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -19,60 +9,49 @@ const DeleteIcon = () => (
 );
 
 const SubjectList = ({ subjects, activeSubjectId, setActiveSubjectId, onAddNewSubject, onDeleteSubject }) => {
-  const [newSubject, setNewSubject] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (newSubject.trim() === '') return;
-    onAddNewSubject(newSubject);
-    setNewSubject('');
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDeleteSubject = (e, subjectId, subjectName) => {
-    e.stopPropagation(); // Prevent triggering the subject selection
-    if (window.confirm(`Are you sure you want to delete "${subjectName}" and all its topics and subtopics?`)) {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to delete "${subjectName}"?`)) {
       onDeleteSubject(subjectId);
     }
   };
 
   return (
-    <div className="subject-list-container">
-      <div>
-        <div className="subject-list-header">
-          Subjects / Tech
-        </div>
-        <nav className="subject-list">
-          {subjects.map(subject => (
-            <div key={subject._id} className="subject-list-item-wrapper">
-              <button
-                className={`subject-list-item ${activeSubjectId === subject._id ? 'active' : ''}`}
-                onClick={() => setActiveSubjectId(subject._id)}
-              >
-                <span className="subject-name">{subject.name}</span>
-                <button
-                  className="delete-subject-btn"
-                  onClick={(e) => handleDeleteSubject(e, subject._id, subject.name)}
-                  title="Delete subject"
-                >
-                  <DeleteIcon />
+    <>
+      <div className="subject-list-container">
+        <div>
+          <div className="subject-list-header">
+  <span>Tech</span>    
+  <span style={{ display: "inline-block", width: "20px" }}></span>
+  <button onClick={() => setIsModalOpen(true)} className="header-add-btn">
+    Add Subject
+  </button>
+</div>
+
+          <nav className="subject-list">
+            {(subjects || []).map(subject => (
+              <div key={subject._id} className="subject-list-item-wrapper">
+                <button className={`subject-list-item ${activeSubjectId === subject._id ? 'active' : ''}`} onClick={() => setActiveSubjectId(subject._id)}>
+                  <span className="subject-name">{subject.name}</span>
+                  <button className="delete-subject-btn" onClick={(e) => handleDeleteSubject(e, subject._id, subject.name)} title="Delete subject">
+                    <DeleteIcon />
+                  </button>
                 </button>
-              </button>
-            </div>
-          ))}
-        </nav>
+              </div>
+            ))}
+          </nav>
+        </div>
       </div>
-      <form onSubmit={handleSubmit} className="new-subject-form">
-        <input 
-          type="text"
-          className="new-subject-input"
-          placeholder="Add new subject..."
-          value={newSubject}
-          onChange={(e) => setNewSubject(e.target.value)}
-        />
-        <button type="submit" className="new-subject-btn">+</button>
-      </form>
-    </div>
+      <AddSubjectModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onAddSubject={onAddNewSubject} 
+      />
+    </>
   );
 };
 
 export default SubjectList;
+
